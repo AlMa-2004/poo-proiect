@@ -20,7 +20,7 @@ class Timp
         cout<<"Numaratoarea a inceput!\n"<<endl;
     }
     //void saveFile(){}
-    float elapsed(const steady_clock::time_point moment) const
+    int elapsed(const steady_clock::time_point moment) const
     {
         return duration_cast<seconds>(moment - start).count();
     }
@@ -29,14 +29,16 @@ class Timp
 class Animal
 {
     string Nume;
+    const int timpProducere;
     bool statusHranit;
     bool statusProdus;
 
     public:
-    Animal(const string& nume, const bool status_hranit, const bool status_produs)
+    Animal(const string& nume, const bool status_hranit, const bool status_produs,const int timp_producere)
         : Nume(nume),
           statusHranit(status_hranit),
-          statusProdus(status_produs)
+          statusProdus(status_produs),
+          timpProducere(timp_producere)
     {
     }
 
@@ -52,17 +54,16 @@ class Animal
 class Recolta
 {
     string Nume;
-    const int timpPlantare; //o planta creste in 1sec,5sec,10sec, iar ele sunt contorizate prin elapsed
+    const int timpCrestere;//o planta creste in 1sec,5sec,10sec, iar ele sunt contorizate prin elapsed
+    int timpPlantat;
     bool statusCrestere, statusUdat;
-
-    //odata ce le recoltez, ele revin in inventarul playerului
 
     ///functii complexe - de crestere cfm elapsed time, de udare
     public:
 
-    Recolta(const string& nume="Recoltax", const int timp_plantare=1, const bool status_crestere=false, const bool status_udat=false)
+    Recolta(const string& nume="Recoltax", const int timp_crestere=5, const bool status_crestere=false, const bool status_udat=false)
         : Nume(nume),
-          timpPlantare(timp_plantare),
+          timpCrestere(timp_crestere),
           statusCrestere(status_crestere),
           statusUdat(status_udat)
     {
@@ -70,11 +71,33 @@ class Recolta
     friend std::ostream& operator<<(std::ostream& os, const Recolta& obj)
     {
         os<< "Nume: "<<obj.Nume
-        <<" timpPlantare: "<<obj.timpPlantare
+        <<" timpPlantare: "<<obj.timpCrestere
         <<" statusUdat: "<<obj.statusUdat
         <<" statusCrestere: "<<obj.statusCrestere;
         return os;
     }
+    void Crestere(int secunde, int timp)
+    {
+        if(statusCrestere==false && statusUdat && (secunde-timpPlantat)>=timpCrestere)
+        {
+            statusCrestere=true;
+            cout<<"Planta "<<Nume<<" a crescut!\n";
+        }
+
+    }
+    void getCrescut(bool t)
+    {
+        statusCrestere = t;
+    }
+    void setUdat(bool t)
+    {
+        statusUdat = t;
+    }
+    bool getUdat()
+    {
+        return statusUdat;
+    }
+
 };
 
 class Player{
