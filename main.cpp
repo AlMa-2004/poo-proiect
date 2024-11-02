@@ -1,10 +1,31 @@
 #include <iostream>
 #include <ostream>
-using namespace std;
-#include <SFML/Graphics.hpp>
-#include <ctime>
 #include <chrono>
+#include <fstream>
+#include <array>
+#include <Helper.h>
+#include <thread>
+#include <SFML/Graphics.hpp>
+using namespace std;
+using namespace std::chrono;
 
+class Timp
+{
+    steady_clock::time_point start;
+    public:
+    //initializez parametrul cu momentul in care a fost creat obiectul, care ar fi momentul 0
+    //pentru ca nu pot sa ii atribui valori intregi
+    Timp(steady_clock::time_point s=steady_clock::now()):start(s)
+    {
+        cout<<"Numaratoarea a inceput!\n"<<endl;
+    }
+    //void saveFile(){}
+    float elapsed(const steady_clock::time_point moment) const
+    {
+        return duration_cast<seconds>(moment - start).count();
+    }
+
+};
 class Animal
 {
     string Nume;
@@ -31,7 +52,7 @@ class Animal
 class Recolta
 {
     string Nume;
-    const int timpPlantare; //o planta creste in 1min,5min,10min, iar ele sunt contorizate prin elapsedTime
+    const int timpPlantare; //o planta creste in 1sec,5sec,10sec, iar ele sunt contorizate prin elapsed
     bool statusCrestere, statusUdat;
 
     //odata ce le recoltez, ele revin in inventarul playerului
@@ -60,6 +81,10 @@ class Player{
 
     string Nume;
     int Bani;
+    //const vector<Animal> Tarc;
+    //const vector<Recolta> Camp;
+    //const vector<Recolta> inventariuSeminte;
+    //const vector<Recolta> inventariuRecolta;
 public:
     Player(): Nume("Jucator"), Bani(0){std::cout<<"Player constructor default"<<std::endl;}
     Player(const string& Nume, int bani) : Nume(Nume), Bani(bani)
@@ -96,12 +121,17 @@ class Meniu
 
 };
 int main() {
+
     Player p1("Anca",1000);
     Player p2;
     cout<<p1<<"\n"<<p2<<"\n";
     Player p3(p2);
     p1=p2;
     cout<<p1<<"\n"<<p3<<"\n";
+
+    Timp timpInGame;
+    std::this_thread::sleep_for(std::chrono::seconds(5)); //test pentru simularea trecerii timpului in game
+    cout<<"Au trecut: "<<timpInGame.elapsed(steady_clock::now())<<" secunde de la pornirea jocului.\n";
 
     return 0;
 
