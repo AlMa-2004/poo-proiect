@@ -30,15 +30,15 @@ class Animal
 {
     string Nume;
     const int timpProducere;
-    bool statusHranit;
-    bool statusProdus;
+    bool statusHranit, statusProdus;
 
     public:
-    Animal(const string& nume, const bool status_hranit, const bool status_produs,const int timp_producere)
+    Animal(const string& nume, const int timp_producere, const bool status_hranit, const bool status_produs)
         : Nume(nume),
+          timpProducere(timp_producere),
           statusHranit(status_hranit),
-          statusProdus(status_produs),
-          timpProducere(timp_producere)
+          statusProdus(status_produs)
+
     {
     }
 
@@ -61,11 +61,13 @@ class Recolta
     ///functii complexe - de crestere cfm elapsed time, de udare
     public:
 
-    Recolta(const string& nume="Recoltax", const int timp_crestere=5, const bool status_crestere=false, const bool status_udat=false)
+    Recolta(const string& nume="Recoltax", const int timp_crestere=0, int timp_plantat=0, const bool status_crestere=false, const bool status_udat=false)
         : Nume(nume),
           timpCrestere(timp_crestere),
+          timpPlantat(timp_plantat),
           statusCrestere(status_crestere),
           statusUdat(status_udat)
+
     {
     }
     friend std::ostream& operator<<(std::ostream& os, const Recolta& obj)
@@ -76,24 +78,25 @@ class Recolta
         <<" statusCrestere: "<<obj.statusCrestere;
         return os;
     }
-    void Crestere(int secunde, int timp)
+    void Crestere(int secunde)
     {
         if(statusCrestere==false && statusUdat && (secunde-timpPlantat)>=timpCrestere)
         {
             statusCrestere=true;
             cout<<"Planta "<<Nume<<" a crescut!\n";
         }
+        else cout<<"Planta "<<Nume<<" inca creste!\n";
 
     }
-    void getCrescut(bool t)
+    bool getCrescut() const
     {
-        statusCrestere = t;
+        return statusCrestere;
     }
     void setUdat(bool t)
     {
         statusUdat = t;
     }
-    bool getUdat()
+    bool getUdat() const
     {
         return statusUdat;
     }
@@ -145,17 +148,22 @@ class Meniu
 };
 int main() {
 
-    Player p1("Anca",1000);
-    Player p2;
-    cout<<p1<<"\n"<<p2<<"\n";
-    Player p3(p2);
-    p1=p2;
-    cout<<p1<<"\n"<<p3<<"\n";
+    //Player p1("Anca",1000);
+    // p2;
+    //cout<<p1<<"\n"<<p2<<"\n";
+    //Player p3(p2);
+    //p1=p2;
+    //cout<<p1<<"\n"<<p3<<"\n";
 
     Timp timpInGame;
-    std::this_thread::sleep_for(std::chrono::seconds(5)); //test pentru simularea trecerii timpului in game
-    cout<<"Au trecut: "<<timpInGame.elapsed(steady_clock::now())<<" secunde de la pornirea jocului.\n";
+    Recolta Grau("Grau", 1,timpInGame.elapsed(steady_clock::now()),0,1);
 
+    std::this_thread::sleep_for(std::chrono::seconds(5)); //test pentru simularea trecerii timpului in game
+    int x=timpInGame.elapsed(steady_clock::now());
+
+    cout<<"Au trecut: "<<x<<" secunde de la pornirea jocului.\n";
+
+    Grau.Crestere(x);
     return 0;
 
 
