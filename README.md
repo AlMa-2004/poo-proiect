@@ -1,23 +1,25 @@
-# Titlu proiect
+# Hay Day
 
 ## Descriere proiect
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Un simulator de ferma in care jucatorul poate creste animale si grane, ulterior deblocand anumite
+zone ale fermei destinate acestora, ca ulterior sa le culeaga sau colecteze in scopul vanzarii.
 
 ## Milestone #0
 
-- [ ] Nume proiect (poate fi schimbat ulterior)
-- [ ] Scurtă descriere a temei alese, ce v-ați propus să implementați
+- [x] Nume proiect (poate fi schimbat ulterior)
+- [x] Scurtă descriere a temei alese, ce v-ați propus să implementați
 
 ## Milestone #1
 
 #### Cerințe
-- [ ] definirea a minim **3-4 clase** folosind compunere cu clasele definite de voi
-- [ ] constructori de inițializare cu parametri
-- [ ] pentru o aceeași (singură) clasă: constructor de copiere, `operator=` de copiere, destructor
-- [ ] `operator<<` pentru toate clasele pentru afișare (std::ostream)
-- [ ] cât mai multe `const` (unde este cazul)
+- [x] definirea a minim **3-4 clase** folosind compunere cu clasele definite de voi
+- [x] constructori de inițializare cu parametri
+- [x] pentru o aceeași (singură) clasă: constructor de copiere, `operator=` de copiere, destructor
+- [x] `operator<<` pentru toate clasele pentru afișare (std::ostream)
+- [x] cât mai multe `const` (unde este cazul)
 - [ ] implementarea a minim 3 funcții membru publice pentru funcționalități specifice temei alese, dintre care cel puțin 1-2 funcții mai complexe
   - nu doar citiri/afișări sau adăugat/șters elemente într-un/dintr-un vector
+
 - [ ] scenariu de utilizare a claselor definite:
   - preferabil sub formă de teste unitare, mai ales dacă vorbim de aplicații consolă 
   - crearea de obiecte și apelarea tuturor funcțiilor membru publice în main
