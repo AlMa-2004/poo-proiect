@@ -1,8 +1,7 @@
 # Hay Day
 
 ## Descriere proiect
-Un simulator de ferma in care jucatorul poate creste animale si grane, ulterior deblocand anumite
-zone ale fermei destinate acestora, ca ulterior sa le culeaga sau colecteze in scopul vanzarii.
+Un simulator de ferma in care jucatorul poate creste animale si grane, ca ulterior sa le culeaga sau colecteze in scopul vanzarii.
 
 ## Milestone #0
 
@@ -17,7 +16,7 @@ zone ale fermei destinate acestora, ca ulterior sa le culeaga sau colecteze in s
 - [x] pentru o aceeași (singură) clasă: constructor de copiere, `operator=` de copiere, destructor
 - [x] `operator<<` pentru toate clasele pentru afișare (std::ostream)
 - [x] cât mai multe `const` (unde este cazul)
-- [ ] implementarea a minim 3 funcții membru publice pentru funcționalități specifice temei alese, dintre care cel puțin 1-2 funcții mai complexe
+- [x] implementarea a minim 3 funcții membru publice pentru funcționalități specifice temei alese, dintre care cel puțin 1-2 funcții mai complexe
   - nu doar citiri/afișări sau adăugat/șters elemente într-un/dintr-un vector
 
 - [ ] scenariu de utilizare a claselor definite:
