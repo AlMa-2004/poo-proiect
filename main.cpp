@@ -157,7 +157,7 @@ public:
     //cc
     Player(const Player& p): Nume(p.Nume), Bani(p.Bani)
     {
-        for(const auto i&:p.Inventariu)
+        for(const auto& i:p.Inventariu)
             this->adaugareItem(i);
         std::cout<<"Player constructor de copiere\n";
     }
@@ -200,17 +200,20 @@ public:
 
     }
 
+    //RECOLTA MANAGEMENT
+
 };
 
 int main() {
 
     //TEST CLASA PLAYER
-    //Player p1("Anca",1000);
-    // p2;
-    //cout<<p1<<"\n"<<p2<<"\n";
-    //Player p3(p2);
-    //p1=p2;
-    //cout<<p1<<"\n"<<p3<<"\n";
+    Item i1("Seminte",100),i2("Grau",120);
+    Player p1("Anca",1000,{i1,i2});
+    Player p2;
+    cout<<p1<<"\n"<<p2<<"\n";
+    Player p3(p2);
+    p1=p2;
+    cout<<p1<<"\n"<<p3<<"\n";
 
     //TEST CLASA TIMP + RECOLTA IN FUNCTIE DE TIMP
     Timp timpInGame;
