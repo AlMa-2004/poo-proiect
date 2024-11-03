@@ -101,7 +101,7 @@ public:
     bool getCrescut() const{return statusCrestere;}
     void setUdat(bool t){statusUdat = t;}
     bool getUdat() const{return statusUdat;}
-    friend void Recolta();
+    friend void Recoltare();
 
 };
 class Item {
@@ -161,8 +161,6 @@ public:
     Inventariu(p.Inventariu),
     Camp(p.Camp)
     {
-        for(const auto& i:p.Inventariu)
-            this->adaugareItem(i);
         std::cout<<"Player constructor de copiere\n";
     }
 
