@@ -2,6 +2,7 @@
 #include <ostream>
 #include <chrono>
 #include <vector>
+#include <array>
 #include <thread>
 #include <SFML/Graphics.hpp>
 using namespace std;
@@ -17,7 +18,7 @@ class Timp
     {
         cout<<"Numaratoarea a inceput!\n"<<endl;
     }
-    int elapsed(const steady_clock::time_point moment) const
+    long long elapsed(const steady_clock::time_point moment) const
     {
         return duration_cast<seconds>(moment - start).count();
     }
@@ -57,14 +58,14 @@ class Animal
 
 class Recolta
 {
-    const string Nume;
-    const int timpCrestere;//o planta creste in 1sec,5sec,10sec, iar ele sunt contorizate prin elapsed
+    string Nume;
+    int timpCrestere;//o planta creste in 1sec,5sec,10sec, iar ele sunt contorizate prin elapsed
     int timpPlantat; ///!!!!timpPlantat din clasa Recolta nu poate fi 0, deoarece in secunda 0 jocul arata meniul!!!
     bool statusCrestere, statusUdat;
 
-    public:
+public:
 
-    Recolta(const string& nume="Recoltax", const int timp_crestere=0, int timp_plantat=0, const bool status_crestere=false, const bool status_udat=false)
+    Recolta(const string& nume="RecoltaX", const int timp_crestere=0, int timp_plantat=0, const bool status_crestere=false, const bool status_udat=false)
         : Nume(nume),
           timpCrestere(timp_crestere),
           timpPlantat(timp_plantat),
@@ -73,12 +74,17 @@ class Recolta
 
     {
     }
+
+    Recolta& operator=(const Recolta& r)=default;
+
     friend std::ostream& operator<<(std::ostream& os, const Recolta& obj)
     {
         os<< "Nume: "<<obj.Nume
-        <<" timpPlantare: "<<obj.timpCrestere
+        <<" timpPlantat: "<<obj.timpPlantat
+        <<" timpCrestere: "<<obj.timpCrestere
         <<" statusUdat: "<<obj.statusUdat
-        <<" statusCrestere: "<<obj.statusCrestere;
+        <<" statusCrestere: "<<obj.statusCrestere
+        <<"\n";
         return os;
     }
     void Crestere(int secunde)
@@ -91,18 +97,11 @@ class Recolta
         else cout<<"Planta "<<Nume<<" inca creste!\n";
 
     }
-    bool getCrescut() const
-    {
-        return statusCrestere;
-    }
-    void setUdat(bool t)
-    {
-        statusUdat = t;
-    }
-    bool getUdat() const
-    {
-        return statusUdat;
-    }
+    string getNume() const{return Nume;}
+    bool getCrescut() const{return statusCrestere;}
+    void setUdat(bool t){statusUdat = t;}
+    bool getUdat() const{return statusUdat;}
+    friend void Recolta();
 
 };
 class Item {
@@ -130,15 +129,15 @@ public:
     }
 
 };
-class Player{
-
+class Player
+{
     string Nume;
     int Bani;
     //vector<Animal> Tarc;
 
     //DE INLOCUIT CU SMART POINTERS
     vector<Item> Inventariu;
-    vector<Recolta> Camp;
+    array<Recolta,5> Camp;
 
 public:
     Player(): Nume("Jucator"), Bani(0)
@@ -146,16 +145,21 @@ public:
         Inventariu.push_back(initial);
         cout<<"Player constructor default\n";
     }
-    Player(const string& Nume, int bani, const vector<Item>& iteme) : Nume(Nume), Bani(bani)
+    Player(const string& Nume, int bani, const vector<Item>& iteme, const array<Recolta,5>& camp=array<Recolta,5>())
+    : Nume(Nume),
+    Bani(bani)
     {
         cout<<"Player constructor parametrizat\n";
-        Inventariu.clear();
-        for(const auto& i : iteme)
-            Inventariu.push_back(i);
+        Inventariu=iteme;
+        Camp=camp;
     }
 
     //cc
-    Player(const Player& p): Nume(p.Nume), Bani(p.Bani)
+    Player(const Player& p):
+    Nume(p.Nume),
+    Bani(p.Bani),
+    Inventariu(p.Inventariu),
+    Camp(p.Camp)
     {
         for(const auto& i:p.Inventariu)
             this->adaugareItem(i);
@@ -173,7 +177,7 @@ public:
     {
         this->Nume=p.Nume;
         this->Bani=p.Bani;
-        Inventariu=p.Inventariu;
+        this->Inventariu=p.Inventariu;
         cout<<"Player assignment\n";
         return *this;
     }
@@ -184,7 +188,12 @@ public:
         <<" Bani: "<<obj.Bani
         <<" Inventariu: ";
         for(auto& i:obj.Inventariu)
-            os<<i<<"\n";
+            os<<i<<" ";
+        os<<"Camp:\n";
+        for(auto& j:obj.Camp) {
+            os<<j<<" ";
+        }
+        os<<"\n";
         return os;
     }
 
@@ -201,7 +210,40 @@ public:
     }
 
     //RECOLTA MANAGEMENT
+    void Plantare(Item& item,int nr)
+    {
+        int x=item.getCantitate();
+        if(nr>x)
+        {
+            cout<<"Nu ai asa de multe seminte pentru a planta!\n";
+            nr=x;
+        }
+        item.setCantitate(x-nr);
+        cout<<"Se planteaza semintele...\n";
 
+        int plantate = 0;
+        for (auto& parcela : Camp) {
+            if (plantate>=nr) break;
+            if (parcela.getNume().empty()) { // verificam daca parcela este libera
+                parcela=Recolta(item.getNume(),3,0,false,false);
+                cout<<"Am plantat "<<item.getNume() <<" pe o parcela libera.\n";
+                plantate++;
+            }
+        }
+        if(plantate<nr) {
+            cout << "Nu mai exista locuri libere in camp pentru toate semintele.\n";
+        }
+    }
+
+    void Recoltare() {
+        for (auto& parcela : Camp) {
+            if (parcela.getCrescut()) {
+                cout << "Recolta de " << parcela.getNume() << " este gata de recoltare!\n";
+                adaugareItem(Item(parcela.getNume(), 1));
+                parcela = Recolta(); // resetam parcela dupa recoltare
+            }
+        }
+    }
 };
 
 int main() {
