@@ -62,7 +62,6 @@ class Recolta
     int timpPlantat; ///!!!!timpPlantat din clasa Recolta nu poate fi 0, deoarece in secunda 0 jocul arata meniul!!!
     bool statusCrestere, statusUdat;
 
-    ///functii complexe - de crestere cfm elapsed time, de udare
     public:
 
     Recolta(const string& nume="Recoltax", const int timp_crestere=0, int timp_plantat=0, const bool status_crestere=false, const bool status_udat=false)
@@ -126,7 +125,7 @@ public:
     {
         Cantitate = c;
     }
-    friend ostream& operator<<(ostream& os,const Item& obj) const {
+    friend ostream& operator<<(ostream& os,const Item& obj) {
         return os << obj.Nume << " (In numar de: " << obj.Cantitate << ")\n";
     }
 
@@ -142,32 +141,50 @@ class Player{
     vector<Recolta> Camp;
 
 public:
-    //Player(): Nume("Jucator"), Bani(0){std::cout<<"Player constructor default"<<std::endl;}
-    Player(const string& Nume, int bani) : Nume(Nume), Bani(bani)
+    Player(): Nume("Jucator"), Bani(0)
+    {   Item initial("Seminte",1);
+        Inventariu.push_back(initial);
+        cout<<"Player constructor default\n";
+    }
+    Player(const string& Nume, int bani, const vector<Item>& iteme) : Nume(Nume), Bani(bani)
     {
         cout<<"Player constructor parametrizat\n";
+        Inventariu.clear();
+        for(const auto& i : iteme)
+            Inventariu.push_back(i);
     }
 
     //cc
     Player(const Player& p): Nume(p.Nume), Bani(p.Bani)
     {
-
+        for(const auto i&:p.Inventariu)
+            this->adaugareItem(i);
         std::cout<<"Player constructor de copiere\n";
     }
 
+    ~Player()
+    {   //dealocare memorie pentru inventariu (?) optionala
+        Inventariu.clear();
+        Inventariu.shrink_to_fit();
+        cout<<"Player destructor\n";
+    }
 
     Player& operator=(const Player& p)
     {
         this->Nume=p.Nume;
         this->Bani=p.Bani;
-        std::cout<<"Player assignment\n";
+        Inventariu=p.Inventariu;
+        cout<<"Player assignment\n";
         return *this;
     }
 
     friend ostream& operator<<(ostream&os, const Player& obj)
     {
         os<<"Nume: "<<obj.Nume
-        <<" Bani: "<<obj.Bani;
+        <<" Bani: "<<obj.Bani
+        <<" Inventariu: ";
+        for(auto& i:obj.Inventariu)
+            os<<i<<"\n";
         return os;
     }
 
@@ -183,13 +200,6 @@ public:
 
     }
 
-
-    ~Player()
-    {   //dealocare memorie pentru inventariu (?) optionala
-        Inventariu.clear();
-        Inventariu.shrink_to_fit();
-        cout<<"Player destructor\n";
-    }
 };
 
 int main() {
@@ -204,7 +214,7 @@ int main() {
 
     //TEST CLASA TIMP + RECOLTA IN FUNCTIE DE TIMP
     Timp timpInGame;
-    Recolta Grau("Grau", 1,timpInGame.elapsed(steady_clock::now()),0,1);
+    Recolta Grau("Grau", 1,timpInGame.elapsed(steady_clock::now()),false,true);
     std::this_thread::sleep_for(std::chrono::seconds(5)); //test pentru simularea trecerii timpului in game
     int x=timpInGame.elapsed(steady_clock::now());
     cout<<"Au trecut: "<<x<<" secunde de la pornirea jocului.\n";
