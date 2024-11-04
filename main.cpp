@@ -14,11 +14,11 @@ class Timp
     public:
     //initializez parametrul cu momentul in care a fost creat obiectul, care ar fi "momentul 0"
     //pentru ca nu pot sa atribui valori intregi
-    Timp(steady_clock::time_point s=steady_clock::now()):start(s)
+    explicit Timp(steady_clock::time_point s=steady_clock::now()):start(s)
     {
         cout<<"Numaratoarea a inceput!\n"<<endl;
     }
-    long long elapsed(const steady_clock::time_point moment) const
+    [[nodiscard]] long long elapsed(const steady_clock::time_point moment) const
     {
         return duration_cast<seconds>(moment - start).count();
     }
@@ -38,15 +38,13 @@ class Animal
     bool statusHranit, statusProdus;
 
     public:
-    Animal(const string& nume, const int timp_producere, const bool status_hranit, const bool status_produs)
-        : Nume(nume),
+    explicit Animal(string nume, int timp_producere, bool status_hranit, bool status_produs)
+        : Nume(std::move(nume)),
           timpProducere(timp_producere),
           statusHranit(status_hranit),
           statusProdus(status_produs)
-
     {
     }
-
     friend std::ostream& operator<<(std::ostream& os, const Animal& obj)
     {
             os<< "Nume: " << obj.Nume
@@ -60,13 +58,13 @@ class Recolta
 {
     string Nume;
     int timpCrestere;//o planta creste in 1sec,5sec,10sec, iar ele sunt contorizate prin elapsed
-    int timpPlantat; ///!!!!timpPlantat din clasa Recolta nu poate fi 0, deoarece in secunda 0 jocul arata meniul!!!
+    long long timpPlantat; ///!!!!timpPlantat din clasa Recolta nu poate fi 0, deoarece in secunda 0 jocul arata meniul!!!
     bool statusCrestere, statusUdat;
 
 public:
 
-    Recolta(const string& nume="RecoltaX", const int timp_crestere=0, int timp_plantat=0, const bool status_crestere=false, const bool status_udat=false)
-        : Nume(nume),
+    explicit Recolta(string nume="RecoltaX", const int timp_crestere=0, long long timp_plantat=0, const bool status_crestere=false, const bool status_udat=false)
+        : Nume(std::move(nume)),
           timpCrestere(timp_crestere),
           timpPlantat(timp_plantat),
           statusCrestere(status_crestere),
@@ -87,7 +85,7 @@ public:
         <<"\n";
         return os;
     }
-    void Crestere(int secunde)
+    void Crestere(long long secunde)
     {
         if(statusCrestere==false && statusUdat && (secunde-timpPlantat)>=timpCrestere)
         {
@@ -97,10 +95,10 @@ public:
         else cout<<"Planta "<<Nume<<" inca creste!\n";
 
     }
-    string getNume() const{return Nume;}
-    bool getCrescut() const{return statusCrestere;}
+    [[nodiscard]] string getNume() const{return Nume;}
+    [[nodiscard]] bool getCrescut() const{return statusCrestere;}
     void setUdat(bool t){statusUdat = t;}
-    bool getUdat() const{return statusUdat;}
+    [[nodiscard]] bool getUdat() const{return statusUdat;}
     friend void Recoltare();
 
 };
@@ -108,22 +106,13 @@ class Item {
     string Nume;
     int Cantitate;
 public:
-    Item(const std::string& n, int c = 1) : Nume(n),Cantitate(c)
+    explicit Item(string n, int c = 1) : Nume(std::move(n)),Cantitate(c)
     {
         cout<<"Constructor item\n";
     }
-    string getNume() const
-    {
-        return Nume;
-    }
-    int getCantitate() const
-    {
-        return Cantitate;
-    }
-    void setCantitate(int c)
-    {
-        Cantitate = c;
-    }
+    [[nodiscard]]string getNume() const{return Nume;}
+    [[nodiscard]]int getCantitate() const{return Cantitate;}
+    void setCantitate(int c){Cantitate = c;}
     friend ostream& operator<<(ostream& os,const Item& obj) {
         return os << obj.Nume << " (In numar de: " << obj.Cantitate << ")\n";
     }
@@ -145,8 +134,8 @@ public:
         Inventariu.push_back(initial);
         cout<<"Player constructor default\n";
     }
-    Player(const string& Nume, int bani, const vector<Item>& iteme, const array<Recolta,5>& camp=array<Recolta,5>())
-    : Nume(Nume),
+    explicit Player(string Nume, int bani, const vector<Item>& iteme, const array<Recolta,5>& camp=array<Recolta,5>())
+    : Nume(std::move(Nume)),
     Bani(bani)
     {
         cout<<"Player constructor parametrizat\n";
@@ -249,17 +238,18 @@ int main() {
     //TEST CLASA PLAYER
     Item i1("Seminte",100),i2("Grau",120);
     Player p1("Anca",1000,{i1,i2});
-    Player p2;
+    const Player p2;
     cout<<p1<<"\n"<<p2<<"\n";
     Player p3(p2);
     p1=p2;
+    p3.Plantare(i1,3);
     cout<<p1<<"\n"<<p3<<"\n";
 
     //TEST CLASA TIMP + RECOLTA IN FUNCTIE DE TIMP
     Timp timpInGame;
     Recolta Grau("Grau", 1,timpInGame.elapsed(steady_clock::now()),false,true);
     std::this_thread::sleep_for(std::chrono::seconds(5)); //test pentru simularea trecerii timpului in game
-    int x=timpInGame.elapsed(steady_clock::now());
+    const long long x=timpInGame.elapsed(steady_clock::now());
     cout<<"Au trecut: "<<x<<" secunde de la pornirea jocului.\n";
     Grau.Crestere(x);
 

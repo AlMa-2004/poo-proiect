@@ -19,6 +19,7 @@ FetchContent_MakeAvailable(SFML)
 add_executable(${PROJECT_NAME}
         main.cpp
         generated/src/Helper.cpp
+        main.cpp
 )
 
 include(cmake/CompilerFlags.cmake)
@@ -85,6 +86,8 @@ if(false)
     add_executable(${PROJECT_NAME}
             main.cpp
             generated/src/Helper.cpp
+            main.cpp
+            main.cpp
     )
 
     include(cmake/CompilerFlags.cmake)
