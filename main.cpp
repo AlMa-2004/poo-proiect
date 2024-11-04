@@ -155,8 +155,8 @@ public:
 
     ~Player()
     {   //dealocare memorie pentru inventariu (?) optionala
-        Inventariu.clear();
-        Inventariu.shrink_to_fit();
+        //Inventariu.clear();
+        //Inventariu.shrink_to_fit();
         cout<<"Player destructor\n";
     }
 
