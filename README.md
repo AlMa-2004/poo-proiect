@@ -24,7 +24,7 @@ Un simulator de ferma in care jucatorul poate creste animale si grane, ca ulteri
   - crearea de obiecte și apelarea tuturor funcțiilor membru publice în main
   - vor fi adăugate în fișierul `tastatura.txt` DOAR exemple de date de intrare de la tastatură (dacă există); dacă aveți nevoie de date din fișiere, creați alte fișiere separat
 - [ ] tag de `git`: de exemplu `v0.1`
-- [ ] serviciu de integrare continuă (CI); exemplu: GitHub Actions
+- [x] serviciu de integrare continuă (CI); exemplu: GitHub Actions
 
 ## Milestone #2
 

@@ -63,7 +63,7 @@ class Recolta
 
 public:
 
-    explicit Recolta(string nume="RecoltaX", const int timp_crestere=0, long long timp_plantat=0, const bool status_crestere=false, const bool status_udat=false)
+    explicit Recolta(string nume="", const int timp_crestere=0, long long timp_plantat=0, const bool status_crestere=false, const bool status_udat=false)
         : Nume(std::move(nume)),
           timpCrestere(timp_crestere),
           timpPlantat(timp_plantat),
@@ -114,7 +114,7 @@ public:
     [[nodiscard]]int getCantitate() const{return Cantitate;}
     void setCantitate(int c){Cantitate = c;}
     friend ostream& operator<<(ostream& os,const Item& obj) {
-        return os << obj.Nume << " (In numar de: " << obj.Cantitate << ")\n";
+        return os <<"Item "<< obj.Nume << " (In numar de: " << obj.Cantitate << ")\n";
     }
 
 };
@@ -197,28 +197,40 @@ public:
     }
 
     //RECOLTA MANAGEMENT
-    void Plantare(Item& item,int nr)
-    {
-        int x=item.getCantitate();
-        if(nr>x)
-        {
-            cout<<"Nu ai asa de multe seminte pentru a planta!\n";
-            nr=x;
+    void Plantare(const string& s, int nr) {
+        bool exista=false;
+        for (auto& invItem:Inventariu) {
+            if (invItem.getNume()==s) {
+                exista=true;
+                if (invItem.getCantitate()<nr) {
+                    cout<<"Nu ai asa de multe seminte pentru a planta! Se vor planta maxim "<< invItem.getCantitate()<<" seminte\n";
+                    nr=invItem.getCantitate();
+                    invItem.setCantitate(0);
+
+                }
+                else
+                    invItem.setCantitate(invItem.getCantitate()-nr);
+                break;
+            }
         }
-        item.setCantitate(x-nr);
+        if (exista==false) {
+            cout<<"Nu ai acest tip de seminte in inventar!\n";
+            return;
+        }
+
         cout<<"Se planteaza semintele...\n";
 
-        int plantate = 0;
-        for (auto& parcela : Camp) {
+        int plantate=0;
+        for (auto& parcela:Camp) {
             if (plantate>=nr) break;
-            if (parcela.getNume().empty()) { // verificam daca parcela este libera
-                parcela=Recolta(item.getNume(),3,0,false,false);
-                cout<<"Am plantat "<<item.getNume() <<" pe o parcela libera.\n";
+            if (parcela.getNume().empty()) {
+                parcela=Recolta(s,0,0,true,true);
+                cout<<"Am plantat "<<s<<" pe o parcela libera.\n";
                 plantate++;
             }
         }
-        if(plantate<nr) {
-            cout << "Nu mai exista locuri libere in camp pentru toate semintele.\n";
+        if (plantate<nr) {
+            cout<<"Nu mai exista parcele libere in camp pentru toate semintele.\n";
         }
     }
 
@@ -226,32 +238,71 @@ public:
         for (auto& parcela : Camp) {
             if (parcela.getCrescut()) {
                 cout << "Recolta de " << parcela.getNume() << " este gata de recoltare!\n";
-                adaugareItem(Item(parcela.getNume(), 1));
+                adaugareItem(Item(parcela.getNume().substr(8), 1));
                 parcela = Recolta(); // resetam parcela dupa recoltare
             }
         }
     }
+    [[nodiscard]] array<Recolta,5>& getCamp(){return Camp;}
 };
 
 int main() {
 
-    //TEST CLASA PLAYER
-    Item i1("Seminte",100),i2("Grau",120);
-    Player p1("Anca",1000,{i1,i2});
-    const Player p2;
-    cout<<p1<<"\n"<<p2<<"\n";
-    Player p3(p2);
-    p1=p2;
-    p3.Plantare(i1,3);
-    cout<<p1<<"\n"<<p3<<"\n";
-
-    //TEST CLASA TIMP + RECOLTA IN FUNCTIE DE TIMP
+    //TEST CLASA TIMP
     Timp timpInGame;
-    Recolta Grau("Grau", 1,timpInGame.elapsed(steady_clock::now()),false,true);
-    std::this_thread::sleep_for(std::chrono::seconds(5)); //test pentru simularea trecerii timpului in game
-    const long long x=timpInGame.elapsed(steady_clock::now());
-    cout<<"Au trecut: "<<x<<" secunde de la pornirea jocului.\n";
-    Grau.Crestere(x);
+    this_thread::sleep_for(seconds(2));
+    cout<<"Elapsed: "<<timpInGame.elapsed(steady_clock::now())<<"\n";
+
+    //TEST CLASA ANIMAL
+    Animal vaca("Marioara",10,true,false);
+    cout<<vaca<<endl;
+
+    //TEST CLASA RECOLTA
+    Recolta grau("Grau",3,timpInGame.elapsed(steady_clock::now()),false,true);
+    this_thread::sleep_for(seconds(4));
+    grau.Crestere(timpInGame.elapsed(steady_clock::now()));
+
+    Recolta porumb("Porumb",4,timpInGame.elapsed(steady_clock::now()),false,true);
+    this_thread::sleep_for(seconds(2));
+    porumb.Crestere(timpInGame.elapsed(steady_clock::now()));
+
+    //TEST CLASA ITEM
+    Item i1("Grau",5);
+    cout<<i1<<endl;
+
+    //TEST CLASA PLAYER
+    Item seminte("Seminte Grau",20);
+    //urmeaza sa lucrez cu derivate din functia item, implicit sa modific functi de plantare din player
+    Item floareaSoarelui("Floarea soarelui",15);
+    Player player("Ana",100,{seminte,floareaSoarelui});
+    cout<<player<<endl;
+
+    player.adaugareItem(Item("Seminte Grau", 5));
+    player.adaugareItem(Item("Cartof", 7));
+    cout<<"Inventariu dupa ce am adaugat iteme \n"<<player<<endl;
+
+    player.Plantare("Seminte Porumb",300);
+    player.Plantare("Seminte Grau",3);  // Attempt to plant 3 seeds
+    cout<<"Status player dupa ce am plantat semintele: \n"<<player<<endl;
+
+
+    this_thread::sleep_for(seconds(3));
+    cout<<"Status seminte dupa ce le-am plantat: \n";
+    for (auto & i:player.getCamp()) {
+        if (i.getNume().empty()==false) {
+            i.Crestere(timpInGame.elapsed(steady_clock::now()));
+        }
+    }
+
+    player.Recoltare();
+    cout<<"Status player dupa ce am recoltat semintele: \n"<<player<<endl;
+
+
+    Player p2(player);
+    Player p3=player;
+    cout<<p2<<endl<<p3;
+
+    return 0;
 
 
     return 0;
