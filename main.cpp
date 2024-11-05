@@ -302,10 +302,6 @@ int main() {
     Player p3=player;
     cout<<p2<<endl<<p3;
 
-    return 0;
-
-
-    return 0;
 
 
 }
