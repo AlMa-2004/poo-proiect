@@ -19,7 +19,16 @@ FetchContent_MakeAvailable(SFML)
 add_executable(${PROJECT_NAME}
         main.cpp
         generated/src/Helper.cpp
-        main.cpp
+        headers/Player.h
+        src/Player.cpp
+        headers/Crop.h
+        src/Crop.cpp
+        headers/Item.h
+        src/Item.cpp
+        headers/Time.h
+        src/Time.cpp
+        headers/Animal.h
+        src/Animal.cpp
 )
 
 include(cmake/CompilerFlags.cmake)
